@@ -1600,8 +1600,7 @@ end
 function r.Snow(u,v)
 v=v or{}
 local w=v.Count or 40
-local x=v.Size or 12
-local y=v.Color or Color3.new(1,1,1)
+local x=v.Size or 6
 local z=v.Transparency or 0.3
 local A=v.ZIndex or 200
 local B=Instance.new"Frame"
@@ -1613,13 +1612,13 @@ B.Parent=u
 local C={}
 for D=1,w do
 local E=Instance.new"TextLabel"
-E.Text="\226\150\171"
-E.TextColor3=y
+E.Text=utf8.char(0x2022)
+E.TextColor3=Color3.new(1,1,1)
 E.TextTransparency=z
-E.TextSize=math.random(x,x*2)
+E.TextSize=x
 E.Font=Enum.Font.GothamMedium
 E.BackgroundTransparency=1
-E.Size=UDim2.new(0,E.TextSize,0,E.TextSize)
+E.Size=UDim2.new(0,x,0,x)
 E.Position=UDim2.new(math.random(),0,math.random(),0)
 E.Parent=B
 C[D]={Obj=E,X=math.random(),Y=math.random(),Speed=math.random(4,16)/100,Drift=math.random(-20,20)/1000}
@@ -4048,7 +4047,7 @@ function ag.Visible(ap,aq)
 al.Visible=aq
 if aq then
 if not ag.Snow then
-ag.Snow=ab.Snow(al,{ZIndex=200,Size=9,Count=14})
+ag.Snow=ab.Snow(al,{ZIndex=200,Count=14})
 end
 elseif ag.Snow then
 ag.Snow:Stop()
@@ -10920,15 +10919,15 @@ ao.Tabs[aq].Selected=true
 if ao.Snow then
 ao.Snow:Stop()
 end
-ao.Snow=ak.Snow(ao.Tabs[aq].UIElements.Main,{ZIndex=100,Size=8,Count=12})
+ao.Snow=ak.Snow(ao.Tabs[aq].UIElements.Main,{ZIndex=100,Count=12})
 task.spawn(function()
 local B=ao.Tabs[aq].UIElements.Main
-local C=B.Rotation
 for D=1,6 do
-ak.Tween(B,0.03,{Rotation=C+(D%2==0 and 3 or-3)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
+local C=D%2==0 and 0.04 or -0.04
+ak.Tween(B,0.03,{AnchorPoint=Vector2.new(C,0)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
 task.wait(0.03)
 end
-ak.Tween(B,0.03,{Rotation=C},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
+ak.Tween(B,0.03,{AnchorPoint=Vector2.new(0,0)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
 end)
 
 task.spawn(function()
@@ -13034,7 +13033,7 @@ av.WindUI:ToggleAcrylic(true)
 if aw.Snow then
 aw.Snow:Stop()
 end
-aw.Snow=an.Snow(aw.UIElements.Main,{ZIndex=500,Size=13,Count=45})
+aw.Snow=an.Snow(aw.UIElements.Main,{ZIndex=500,Count=45})
 
 end)
 end
