@@ -1603,6 +1603,8 @@ local w=v.Count or 40
 local x=v.Size or 6
 local z=v.Transparency or 0.3
 local A=v.ZIndex or 200
+local SpeedMin=v.SpeedMin or 4
+local SpeedMax=v.SpeedMax or 16
 local B=Instance.new"Frame"
 B.Size=UDim2.new(1,0,1,0)
 B.BackgroundTransparency=1
@@ -1621,7 +1623,7 @@ E.BackgroundTransparency=1
 E.Size=UDim2.new(0,x,0,x)
 E.Position=UDim2.new(math.random(),0,math.random(),0)
 E.Parent=B
-C[D]={Obj=E,X=math.random(),Y=math.random(),Speed=math.random(4,16)/100,Drift=math.random(-20,20)/1000}
+C[D]={Obj=E,X=math.random(),Y=math.random(),Speed=math.random(SpeedMin,SpeedMax)/100,Drift=math.random(-20,20)/1000}
 end
 local F=d.RenderStepped:Connect(function(G)
 if not B.Parent then
@@ -4047,7 +4049,7 @@ function ag.Visible(ap,aq)
 al.Visible=aq
 if aq then
 if not ag.Snow then
-ag.Snow=ab.Snow(al,{ZIndex=200,Count=14})
+ag.Snow=ab.Snow(al,{ZIndex=200,Count=16,SpeedMin=5,SpeedMax=18})
 end
 elseif ag.Snow then
 ag.Snow:Stop()
@@ -10874,6 +10876,7 @@ end
 
 function ao.SelectTab(ap,aq)
 if not ao.Tabs[aq].Locked then
+local _prevSelectedTab=ao.SelectedTab
 ao.SelectedTab=aq
 
 for ar,as in next,ao.Tabs do
@@ -10919,7 +10922,14 @@ ao.Tabs[aq].Selected=true
 if ao.Snow then
 ao.Snow:Stop()
 end
-ao.Snow=ak.Snow(ao.Tabs[aq].UIElements.Main,{ZIndex=100,Count=12})
+if ao.ShakeLoop then
+pcall(task.cancel,ao.ShakeLoop)
+ao.ShakeLoop=nil
+end
+if _prevSelectedTab and _prevSelectedTab~=aq and ao.Tabs[_prevSelectedTab]and ao.Tabs[_prevSelectedTab].UIElements and ao.Tabs[_prevSelectedTab].UIElements.Main then
+ao.Tabs[_prevSelectedTab].UIElements.Main.AnchorPoint=Vector2.new(0,0)
+end
+ao.Snow=ak.Snow(ao.Tabs[aq].UIElements.Main,{ZIndex=100,Count=22,SpeedMin=22,SpeedMax=44})
 task.spawn(function()
 local B=ao.Tabs[aq].UIElements.Main
 for D=1,6 do
@@ -10928,6 +10938,25 @@ ak.Tween(B,0.03,{AnchorPoint=Vector2.new(C,0)},Enum.EasingStyle.Quad,Enum.Easing
 task.wait(0.03)
 end
 ak.Tween(B,0.03,{AnchorPoint=Vector2.new(0,0)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
+end)
+
+ao.ShakeLoop=task.spawn(function()
+local B
+while ao.SelectedTab==aq do
+task.wait(3)
+if ao.SelectedTab~=aq then break end
+B=ao.Tabs[aq]and ao.Tabs[aq].UIElements and ao.Tabs[aq].UIElements.Main
+if not B or not B.Parent then break end
+for D=1,30 do
+if ao.SelectedTab~=aq then break end
+local C=D%2==0 and 0.12 or -0.12
+ak.Tween(B,0.033,{AnchorPoint=Vector2.new(C,0)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
+task.wait(0.033)
+end
+if ao.SelectedTab==aq and B and B.Parent then
+ak.Tween(B,0.05,{AnchorPoint=Vector2.new(0,0)},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
+end
+end
 end)
 
 task.spawn(function()
@@ -13033,7 +13062,7 @@ av.WindUI:ToggleAcrylic(true)
 if aw.Snow then
 aw.Snow:Stop()
 end
-aw.Snow=an.Snow(aw.UIElements.Main,{ZIndex=500,Count=45})
+aw.Snow=an.Snow(aw.UIElements.Main,{ZIndex=500,Count=52,SpeedMin=5,SpeedMax=18})
 
 end)
 end
